@@ -42,12 +42,7 @@ def run_sql(db_id: str, sql: str, timeout: float = 5.0) -> tuple[bool, list[tupl
 
 
 def canonicalize(rows: list[tuple] | None) -> list[tuple] | None:
-    """Sort rows. Coerce cells to str. None -> ''.
-
-    This is intentionally forgiving: many text-to-SQL evals fail trivially
-    on row order or NULL representation. If your evaluation needs to be
-    stricter, tighten this.
-    """
+    """Sort rows; coerce cells to str; None -> ''."""
     if rows is None:
         return None
     return sorted(tuple("" if c is None else str(c) for c in row) for row in rows)
@@ -62,36 +57,18 @@ def matches(gold_rows: list[tuple] | None, pred_rows: list[tuple] | None) -> boo
 # ---------- Implement these (Phase 5) ----------------------------------
 
 def eval_one(question: dict, agent_url: str) -> dict:
-    """TODO.
-
-    Per question:
-      1. Run the gold SQL against question["db_id"]. If it errors, mark
-         the question unscoreable (still record the result, but exclude
-         from pass-rate calculations).
-      2. POST to `agent_url` with body {"question": ..., "db": ...}.
-      3. From the response, take the per-iteration history and the final SQL.
-      4. For each iteration's SQL, run it and check whether its rows match
-         the gold rows (use matches()).
-      5. Return a dict including at minimum:
-           question, db_id, iterations, final_correct,
-           per_iteration: [{"iteration": int, "correct": bool, ...}, ...]
-    """
+    """Score one question. Return a dict capturing per-iteration correctness."""
     raise NotImplementedError("Phase 5")
 
 
 def summarize(results: list[dict]) -> dict:
-    """TODO.
+    """Aggregate per-question results.
 
-    Compute:
-      - n: number of scoreable questions
-      - final_pass_rate: fraction with final_correct == True
-      - per_iteration_pass_rate: list of {"iteration": k, "pass_rate": f}
-        where pass_rate at k = fraction of questions whose iteration-k SQL
-        produced correct rows.
-
-    Why per-iteration matters: if iter 1 pass rate is the same as iter 3,
-    the verify+revise loop is doing nothing. If it climbs meaningfully,
-    the loop is earning its keep.
+    Per-iteration carry-forward: if the agent terminated at iteration j < k
+    (verify said ok at j, or it hit MAX_ITERATIONS at j < k), treat the
+    question's iteration-k result as identical to its iteration-j result.
+    The agent stopped emitting; whatever it had at termination is what
+    would have been served had we polled at iteration k.
     """
     raise NotImplementedError("Phase 5")
 

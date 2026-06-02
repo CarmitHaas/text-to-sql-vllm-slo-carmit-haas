@@ -10,8 +10,8 @@ Graph shape:
 
 Loop is capped at MAX_ITERATIONS total generate/revise calls.
 
-TODO markers indicate what you implement. The execute node and the
-graph wiring around it are provided.
+The execute node and the graph wiring are provided. You implement the
+LLM-calling nodes and the conditional router.
 """
 from __future__ import annotations
 
@@ -51,7 +51,7 @@ def llm() -> ChatOpenAI:
     return ChatOpenAI(
         model=VLLM_MODEL,
         base_url=VLLM_BASE_URL,
-        api_key="not-needed",  # vLLM ignores the key, but the SDK requires a string
+        api_key="not-needed",  # vLLM ignores the key but the SDK requires a string
         temperature=0.0,
     )
 
@@ -59,24 +59,12 @@ def llm() -> ChatOpenAI:
 # ---- Nodes ------------------------------------------------------------
 
 def _attach_schema(state: AgentState) -> dict:
-    """Provided. Render the DB schema once at the start."""
+    """Provided. Render the DB schema once at the start of the run."""
     return {"schema": render_schema(state.db_id)}
 
 
 def generate_sql_node(state: AgentState) -> dict:
-    """TODO (Phase 3, step 1).
-
-    - Build messages using GENERATE_SQL_SYSTEM / GENERATE_SQL_USER from
-      agent.prompts, filling in state.schema and state.question.
-    - Call llm().invoke(messages).
-    - Strip any ```sql ... ``` fencing the model emits.
-    - Return {"sql": <sql>, "iteration": state.iteration + 1, "history": ...}.
-
-    The history field is yours to use - one entry per iteration with
-    whatever info you'd want to inspect later (sql, exec result, verify
-    verdict). The Final deliverables make use of per-iteration data, so
-    populate it now.
-    """
+    """Produce a SQL query for state.question given state.schema. Returns state updates."""
     raise NotImplementedError("Implement in Phase 3")
 
 
@@ -86,38 +74,17 @@ def execute_node(state: AgentState) -> dict:
 
 
 def verify_node(state: AgentState) -> dict:
-    """TODO (Phase 3, step 1).
-
-    - Render state.execution via ExecutionResult.render().
-    - Build messages using VERIFY_SYSTEM / VERIFY_USER, filling in
-      question, sql, execution_result.
-    - Call llm() with response_format={"type": "json_object"} so the
-      response is parseable JSON.
-    - Parse {"ok": bool, "issue": str}.
-    - Return {"verify_ok": ok, "verify_issue": issue}.
-    """
+    """Decide whether state.execution plausibly answers state.question. Returns state updates."""
     raise NotImplementedError("Implement in Phase 3")
 
 
 def revise_node(state: AgentState) -> dict:
-    """TODO (Phase 3, step 1).
-
-    - Build messages using REVISE_SYSTEM / REVISE_USER, including
-      state.verify_issue so the revise call has specific feedback.
-    - Call llm().invoke(messages).
-    - Strip fences.
-    - Return {"sql": <new sql>, "iteration": state.iteration + 1, "history": ...}.
-    """
+    """Produce a revised SQL query given the verify feedback. Returns state updates."""
     raise NotImplementedError("Implement in Phase 3")
 
 
 def route_after_verify(state: AgentState) -> str:
-    """TODO (Phase 3, step 3).
-
-    Return:
-      - "revise" if verify said not ok AND state.iteration < MAX_ITERATIONS
-      - "end"    otherwise
-    """
+    """Return "revise" to loop, "end" to terminate."""
     raise NotImplementedError("Implement in Phase 3")
 
 
