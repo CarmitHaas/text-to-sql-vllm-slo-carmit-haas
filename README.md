@@ -122,12 +122,14 @@ If a URL doesn't load, the port forward is the most likely culprit.
 
 Imagine the minimal SLO your leadership can buy is something like this:
 
-> **P95 end-to-end agent latency under 5 seconds, 100+ effective user RPS over a 5-minute window.**
+> **P95 end-to-end agent latency under 5 seconds, 10+ RPS (1rps = 1 full agent run per second) over a 5-minute window.**
 
 
 The model is fixed: `Qwen/Qwen3-30B-A3B-Instruct-2507`. The hardware is fixed: 1× H100 80GB. Everything else is up to you, use your knowledge of inference optimizations.
 
 We are not enumerating which parameters to consider on purpose. Knowing which levers to reach for, given a workload profile (1.5-3K-token prompts, short structured outputs, ~2-3 dependent calls per user request) and a latency target, is the apply-the-lectures part of the assignment. Heads-up: you'll need to iterate.   
+
+There's an example launch script at `scripts/start_vllm.sh` to get you started - feel free to modify it or roll your own. The [vLLM docs](https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html) are your reference for the available flags.
 
 ### What to do:
 1.  Start vLLM with your initial configuration.
@@ -158,6 +160,8 @@ Open the starter dashboard in Grafana and build it out to cover three categories
 3. **KV cache.** The metric (or metrics) that tell you whether you have headroom for more concurrency or you're about to evict.
 
 We are not naming the specific metrics on purpose. Exploring `/metrics` and picking the right ones for each category is part of the work. Aim for a dashboard a teammate could open at 3 AM on a Friday night in a bar and read the picture.
+
+The starter dashboard at `infra/grafana/provisioning/dashboards/serving.json` gives you 2 pre-built panels to build on - feel free to extend it in the Grafana UI or edit the JSON directly. The [vLLM metrics docs](https://docs.vllm.ai/en/latest/usage/metrics.html) describe what each metric means, and the [Grafana docs](https://grafana.com/docs/grafana/latest/) are your reference for building panels.
 
 ### What you should have in the end:
 - Grafana dashboard covering latency, throughput, KV cache
@@ -214,7 +218,7 @@ ok=false├──► ┌─────────────────┐
 
   
 
-1.  **Implement `generate_sql`, `verify`, `revise` nodes** in `agent/graph.py`. The `execute` node and helpers for rendering the DB schema as context are provided.
+1.  **Implement the LLM-calling nodes** in `agent/graph.py`. `generate_sql_node` is filled in as a worked example - `verify`, `revise`, and the `route_after_verify` router are yours, and each docstring spells out what the node must return. The mechanics (LLM client, graph wiring, `execute`, schema rendering) are scaffolded; the prompts and the verify/revise logic are the actual exercise.
 
 2.  **Write the prompts** in `agent/prompts.py`. Aim for it to fire on the obvious cases: SQL errored, zero rows when the question implies rows exist, returned columns clearly don't answer the question.
 
@@ -317,7 +321,7 @@ The eval signal is execution accuracy: run the agent's final SQL and the gold SQ
 
 This is where the configuration from Phase 1 meets reality. The target is the platform SLO from Phase 1:
 
-> **P95 end-to-end agent latency under 5 seconds, 100+ effective user RPS over a 5-minute window.**
+> **P95 end-to-end agent latency under 5 seconds, 10+ RPS (1rps = 1 full agent run per second) over a 5-minute window.**
 
  
 ### What to do:
@@ -387,3 +391,19 @@ By the end, your repo should contain:
 | `results/eval_after_tuning.json` | Post-tuning eval results |
 | `screenshots/grafana_serving.png` | The Grafana dashboard under load |
 | `screenshots/langfuse_trace.png` | A Langfuse trace showing a verify→revise loop |
+
+---
+
+## Grading
+
+We grade the **reasoning, not the green checkmarks.** A missed SLO with a crisp, metric-grounded diagnosis scores higher than a hit SLO you can't explain. We read `REPORT.md` closely - that's where the thinking shows.
+
+| Area | Weight | What a strong submission shows |
+|---|---|---|
+| **Serving config & justification** (Phase 1) | 15% | vLLM serving Qwen3-30B-A3B on the H100, with flags chosen *for this workload* (not defaults) and a one-line rationale each that shows you understood the MoE / prompt-shape / latency tradeoffs. |
+| **Observability dashboard** (Phase 2) | 15% | Latency (percentiles), throughput, and KV-cache panels built from the right `/metrics`, that visibly react under load and actually answer "is it slow, and where in the request lifecycle?" Readable cold. |
+| **Agent design** (Phase 3) | 10% | `verify → revise` loop wired with an iteration cap, prompts that catch the obvious failure cases, and at least one question that genuinely triggers a revise. |
+| **Agent tracing** (Phase 4) | 5% | Langfuse capturing the `generate_sql / verify / (revise)` waterfall, with metadata tags you actually use in Phase 6. |
+| **Eval rigor** (Phase 5) | 15% | Correct execution-accuracy comparison (canonicalized row sets), overall + per-iteration pass rate, and an honest read on whether the loop earns its keep. |
+| **SLO diagnosis & iteration** (Phase 6) | 25% | A metric-grounded iteration log - *"saw X → hypothesized Y → changed Z → result W"* - with before/after evidence the targeted metric moved, and whether end-to-end latency *and* quality followed. Diagnosis quality counts more than hitting the number. |
+| **Report & communication** (Phase 7) | 15% | `REPORT.md` clear, honest about misses, ≤3 pages, and "what I'd do with more time" is specific (not "add Kubernetes"). |

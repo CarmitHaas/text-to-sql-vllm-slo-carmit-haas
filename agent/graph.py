@@ -10,21 +10,26 @@ Graph shape:
 
 Loop is capped at MAX_ITERATIONS total generate/revise calls.
 
-The execute node and the graph wiring are provided. You implement the
-LLM-calling nodes and the conditional router.
+The execute node and the graph wiring are provided. `generate_sql_node` is
+filled in as a worked example; you implement `verify`, `revise`, and the
+conditional router following the same shape.
 """
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass, field
 from typing import Any
 
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
 
+from agent import prompts
 from agent.execution import ExecutionResult, execute_sql
 from agent.schema import render_schema
 
+# Total generate + revise calls before the loop is forced to stop.
+# 3-5 is a reasonable range; tune it as part of Phase 3.
 MAX_ITERATIONS = 3
 
 VLLM_BASE_URL = os.environ.get("VLLM_BASE_URL", "http://localhost:8000/v1")
@@ -63,9 +68,39 @@ def _attach_schema(state: AgentState) -> dict:
     return {"schema": render_schema(state.db_id)}
 
 
+def _extract_sql(text: str) -> str:
+    """Pull a SQL statement out of an LLM reply, stripping markdown fences/prose.
+
+    Intentionally simple: take the first ```sql ... ``` block if there is one,
+    otherwise the whole reply. You may need to harden this for your prompts.
+    """
+    fenced = re.search(r"```(?:sql)?\s*(.*?)```", text, re.DOTALL | re.IGNORECASE)
+    return (fenced.group(1) if fenced else text).strip()
+
+
 def generate_sql_node(state: AgentState) -> dict:
-    """Produce a SQL query for state.question given state.schema. Returns state updates."""
-    raise NotImplementedError("Implement in Phase 3")
+    """Worked example - the other LLM nodes follow this same shape.
+
+    Build messages from the prompts, call the shared llm(), extract the SQL,
+    and return only the state fields you changed. `iteration` is bumped here
+    (and in revise) so route_after_verify can enforce MAX_ITERATIONS.
+
+    This node is wired and ready; fill in GENERATE_SQL_SYSTEM / GENERATE_SQL_USER
+    in prompts.py to make it produce real queries.
+    """
+    response = llm().invoke([
+        ("system", prompts.GENERATE_SQL_SYSTEM),
+        ("user", prompts.GENERATE_SQL_USER.format(
+            schema=state.schema,
+            question=state.question,
+        )),
+    ])
+    sql = _extract_sql(response.content)
+    return {
+        "sql": sql,
+        "iteration": state.iteration + 1,
+        "history": state.history + [{"node": "generate_sql", "sql": sql}],
+    }
 
 
 def execute_node(state: AgentState) -> dict:
@@ -74,17 +109,40 @@ def execute_node(state: AgentState) -> dict:
 
 
 def verify_node(state: AgentState) -> dict:
-    """Decide whether state.execution plausibly answers state.question. Returns state updates."""
+    """Decide whether state.execution plausibly answers state.question.
+
+    Follow the generate_sql_node pattern: build messages from the VERIFY_*
+    prompts, call llm(), parse the reply. Ask the model for a small JSON object
+    like {"ok": bool, "issue": str} and parse it defensively - the model may
+    wrap it in prose or fences. state.execution.render() gives you a compact
+    view of the rows or error to feed into the prompt.
+
+    Return: {"verify_ok": <bool>, "verify_issue": <str>}.
+    What counts as "not plausible" is yours to define - see the Phase 3 targets
+    in the README.
+    """
     raise NotImplementedError("Implement in Phase 3")
 
 
 def revise_node(state: AgentState) -> dict:
-    """Produce a revised SQL query given the verify feedback. Returns state updates."""
+    """Produce a revised SQL query given state.verify_issue and the prior attempt.
+
+    Same shape as generate_sql_node, but the prompt should include the failing
+    SQL, its execution result, and the verifier's complaint so the model can fix
+    it. Bump the iteration counter the same way generate_sql_node does so the
+    loop terminates.
+
+    Return: {"sql": <str>, "iteration": state.iteration + 1, ...}.
+    """
     raise NotImplementedError("Implement in Phase 3")
 
 
 def route_after_verify(state: AgentState) -> str:
-    """Return "revise" to loop, "end" to terminate."""
+    """Conditional router: return "revise" to loop, "end" to terminate.
+
+    Two reasons to end: the verifier was happy (state.verify_ok), or you've hit
+    the iteration cap (state.iteration >= MAX_ITERATIONS). Otherwise, revise.
+    """
     raise NotImplementedError("Implement in Phase 3")
 
 
