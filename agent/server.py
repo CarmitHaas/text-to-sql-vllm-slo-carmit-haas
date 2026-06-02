@@ -19,15 +19,14 @@ load_dotenv()
 
 from agent.graph import AgentState, graph  # noqa: E402
 
-# Langfuse callback handler (attached only when keys are present).
+# Langfuse callback handler. If keys are set we initialize it; failures
+# are NOT swallowed - a misconfigured Langfuse should not silently
+# produce zero traces.
 _lf_handler: Any = None
 if os.environ.get("LANGFUSE_PUBLIC_KEY") and os.environ.get("LANGFUSE_SECRET_KEY"):
-    try:
-        from langfuse.callback import CallbackHandler
+    from langfuse.langchain import CallbackHandler
 
-        _lf_handler = CallbackHandler()
-    except Exception:  # noqa: BLE001
-        _lf_handler = None
+    _lf_handler = CallbackHandler()
 
 
 app = FastAPI()

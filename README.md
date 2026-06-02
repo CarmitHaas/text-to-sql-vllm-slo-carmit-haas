@@ -44,7 +44,7 @@ If done with curiosity, this assignment will bring you tons of knowledge about h
 
 -  **Hardware:** 1× H100
 
--  **Software:** Docker + docker-compose, Python, uv, git  
+-  **Software:** Docker + docker-compose, Python with `python3-dev` headers (vLLM's torch.compile path needs them), uv, git  
 
 ---
 
@@ -120,12 +120,12 @@ If a URL doesn't load, the port forward is the most likely culprit.
 
 ## Phase 1 (vLLM)
 
-Imagine the minimal SLO your leadership can buy is something like this
+Imagine the minimal SLO your leadership can buy is something like this:
 
-> **P95 end-to-end agent latency under 5 seconds, sustained 8 user RPS, over a 5-minute window.**
+> **P95 end-to-end agent latency under 5 seconds, 100+ effective user RPS over a 5-minute window.**
 
 
-The model is fixed: `Qwen/Qwen3-30B-A3B-Instruct-2507`. The hardware is fixed: 1× H100 80GB. Everything else is up to you,  use your knowledge of fancy inference optimizations.
+The model is fixed: `Qwen/Qwen3-30B-A3B-Instruct-2507`. The hardware is fixed: 1× H100 80GB. Everything else is up to you, use your knowledge of inference optimizations.
 
 We are not enumerating which parameters to consider on purpose. Knowing which levers to reach for, given a workload profile (1.5-3K-token prompts, short structured outputs, ~2-3 dependent calls per user request) and a latency target, is the apply-the-lectures part of the assignment. Heads-up: you'll need to iterate.   
 
@@ -317,7 +317,7 @@ The eval signal is execution accuracy: run the agent's final SQL and the gold SQ
 
 This is where the configuration from Phase 1 meets reality. The target is the platform SLO from Phase 1:
 
-> **P95 end-to-end agent latency under 5 seconds, sustained 8 user RPS, over a 5-minute window.**
+> **P95 end-to-end agent latency under 5 seconds, 100+ effective user RPS over a 5-minute window.**
 
  
 ### What to do:
@@ -327,7 +327,7 @@ This is where the configuration from Phase 1 meets reality. The target is the pl
 
 ```bash
 
-uv run python load_test/driver.py --rps 8 --duration 300
+uv run python load_test/driver.py --rps n --duration 300
 
 ```  
 
