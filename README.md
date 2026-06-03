@@ -216,6 +216,8 @@ ok=false├──► ┌─────────────────┐
 
   
 
+> **Tip - iterate without vLLM.** This phase is about agent logic, not infra. While you wire up the graph and draft prompts, you don't need your H100 endpoint running: point the agent at any OpenAI-compatible API by setting `VLLM_BASE_URL`, `VLLM_MODEL`, and `OPENAI_API_KEY` in `.env` (see the commented block there). Switch back to your local vLLM for final prompt tuning and **all** of Phases 5-6 - behavior and tokenization differ between models, so prompts and eval numbers only count against the real `Qwen3-30B-A3B` endpoint.
+
 ### What to do:
 
   

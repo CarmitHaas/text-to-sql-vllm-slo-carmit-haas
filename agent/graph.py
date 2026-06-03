@@ -34,6 +34,9 @@ MAX_ITERATIONS = 3
 
 VLLM_BASE_URL = os.environ.get("VLLM_BASE_URL", "http://localhost:8000/v1")
 VLLM_MODEL = os.environ.get("VLLM_MODEL", "Qwen/Qwen3-30B-A3B-Instruct-2507")
+# vLLM ignores the key, but a hosted OpenAI-compatible provider needs a real one.
+# Lets you point the agent at e.g. OpenAI while iterating without a running vLLM.
+LLM_API_KEY = os.environ.get("OPENAI_API_KEY", "not-needed")
 
 
 @dataclass
@@ -52,11 +55,11 @@ class AgentState:
 
 
 def llm() -> ChatOpenAI:
-    """Chat client pointed at the local vLLM endpoint."""
+    """Chat client pointed at VLLM_BASE_URL (your local vLLM by default)."""
     return ChatOpenAI(
         model=VLLM_MODEL,
         base_url=VLLM_BASE_URL,
-        api_key="not-needed",  # vLLM ignores the key but the SDK requires a string
+        api_key=LLM_API_KEY,
         temperature=0.0,
     )
 
