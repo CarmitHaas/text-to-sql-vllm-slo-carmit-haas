@@ -16,7 +16,7 @@ All in all you need to do two things:
   
 The endpoint will run on one H100, ain't much but honest hardware.
 
-![Farmer behind viral 'it ain't much, but it's honest work' meme dies in crash](https://cloudfront-us-east-1.images.arcpublishing.com/gray/FLBGRRRDQNHYBNTNHU4WOWRIFY.png)
+![Farmer](https://cloudfront-us-east-1.images.arcpublishing.com/gray/FLBGRRRDQNHYBNTNHU4WOWRIFY.png)
 
 Disclaimer:
 You don't need to set up Kubernetes, build a frontend or productionize past the toy-infra level. The point of the whole assignment is to learn what each layer tells you.
@@ -148,6 +148,26 @@ There's an example launch script at `scripts/start_vllm.sh` to get you started -
 
   
 
+## H100 is not needed all the time
+
+You don't have to occupy an H100 VM to make progress on every phase. The agent and the o11y stack talk to *any* OpenAI-compatible server, so you can build and debug against a lighter backend and switch to the real endpoint only when the numbers matter. Configure the backend via `VLLM_BASE_URL` / `VLLM_MODEL` / `OPENAI_API_KEY` in `.env` (see the commented block there). Consider two options:
+
+- Hosted API: point at e.g. OpenAI with a your own key. It exposes no Prometheus metrics though.
+- CPU-only vLLM: run vLLM on CPU with a small stand-in model like `Qwen/Qwen3-0.6B`. See the [CPU install docs](https://docs.vllm.ai/en/latest/getting_started/installation/cpu.html) for more details.
+
+What you can do off the H100:
+
+| Phase | Off-GPU? | Notes |
+|---|---|---|
+| 2 (Grafana) | CPU-vLLM only | Hosted APIs expose no `/metrics`. Build panels and confirm they react against a CPU vLLM; absolute numbers are unrepresentative. |
+| 3 (Agent) | Either | Pure graph / prompt wiring. |
+| 4 (Tracing) | Either | Langfuse captures the LangGraph spans regardless of backend. |
+| 5 (Evals) | Either | Validate the eval harness end-to-end; real pass rates must come from the 30B endpoint. |
+
+Anything you report e.g. eval pass rates, latency, the Phase 6 SLO must come from the real `Qwen3-30B-A3B` on the H100.
+
+---
+
 ## Phase 2 (o11y core)
 
 Prometheus is already configured to scrape vLLM's `/metrics`. Grafana is already configured with Prometheus as a datasource and a starter dashboard with 2 pre-built panels.
@@ -216,7 +236,7 @@ ok=false├──► ┌─────────────────┐
 
   
 
-> **Tip - iterate without vLLM.** This phase is about agent logic, not infra. While you wire up the graph and draft prompts, you don't need your H100 endpoint running: point the agent at any OpenAI-compatible API by setting `VLLM_BASE_URL`, `VLLM_MODEL`, and `OPENAI_API_KEY` in `.env` (see the commented block there). Switch back to your local vLLM for final prompt tuning and **all** of Phases 5-6 - behavior and tokenization differ between models, so prompts and eval numbers only count against the real `Qwen3-30B-A3B` endpoint.
+> **Tip:** this phase is pure agent logic - you don't need the H100 running to build the graph and draft prompts. See [Developing without the H100](#developing-without-the-h100). Do final prompt tuning against the real `Qwen3-30B-A3B` endpoint, though - behavior and tokenization differ between models.
 
 ### What to do:
 
