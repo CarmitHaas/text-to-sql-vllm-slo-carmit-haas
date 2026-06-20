@@ -57,8 +57,64 @@ def matches(gold_rows: list[tuple] | None, pred_rows: list[tuple] | None) -> boo
 # ---------- Implement these (Phase 5) ----------------------------------
 
 def eval_one(question: dict, agent_url: str) -> dict:
-    """Score one question. Return a dict capturing per-iteration correctness."""
-    raise NotImplementedError("Phase 5")
+    """Score one question by execution accuracy, per iteration.
+
+    Calls the agent over HTTP, then re-runs each SQL the agent emitted (the
+    generate_sql attempt plus any revise attempts, taken from the agent's
+    `history`) against the target DB and compares each to the gold result set.
+    That gives a per-iteration correctness list, which `summarize` turns into a
+    per-iteration pass rate.
+    """
+    db_id = question["db_id"]
+    gold_ok, gold_rows, gold_err = run_sql(db_id, question["gold_sql"])
+
+    record: dict = {
+        "db_id": db_id,
+        "question": question["question"],
+        "gold_ok": gold_ok,
+        "gold_error": gold_err,
+        "agent_ok": False,
+        "agent_error": None,
+        "n_iterations": 0,
+        "per_iter": [],          # correctness of each generate/revise attempt, in order
+        "final_correct": False,
+        "latency_seconds": None,
+    }
+
+    t0 = time.monotonic()
+    try:
+        resp = httpx.post(
+            agent_url,
+            json={"question": question["question"], "db": db_id, "tags": {"run": "eval"}},
+            timeout=120.0,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as e:  # noqa: BLE001
+        record["agent_error"] = f"{type(e).__name__}: {e}"
+        record["latency_seconds"] = time.monotonic() - t0
+        return record
+    record["latency_seconds"] = time.monotonic() - t0
+
+    record["agent_ok"] = bool(data.get("ok", False))
+    record["agent_error"] = data.get("error")
+
+    # Each generate/revise node logged {"node", "sql"}; score those SQLs in order.
+    attempts = [h["sql"] for h in data.get("history", []) if "sql" in h]
+    if not attempts and data.get("sql"):
+        attempts = [data["sql"]]
+    record["n_iterations"] = len(attempts)
+
+    if gold_ok:
+        per_iter = []
+        for sql in attempts:
+            ok, rows, _ = run_sql(db_id, sql)
+            per_iter.append(bool(ok) and matches(gold_rows, rows))
+        record["per_iter"] = per_iter
+        record["final_correct"] = per_iter[-1] if per_iter else False
+    # If gold itself did not run, the question is not gradable; summarize counts
+    # those separately rather than scoring them as wrong.
+    return record
 
 
 def summarize(results: list[dict]) -> dict:
@@ -70,7 +126,37 @@ def summarize(results: list[dict]) -> dict:
     The agent stopped emitting; whatever it had at termination is what
     would have been served had we polled at iteration k.
     """
-    raise NotImplementedError("Phase 5")
+    gradable = [r for r in results if r.get("gold_ok")]
+    n = len(gradable)
+
+    overall = (sum(1 for r in gradable if r["final_correct"]) / n) if n else 0.0
+
+    # Per-iteration pass rate, carrying each question's last attempt forward to
+    # every later iteration index.
+    max_iters = max((len(r["per_iter"]) for r in gradable), default=0)
+    pass_rate_by_iteration: list[float] = []
+    for k in range(max_iters):
+        hits = 0
+        for r in gradable:
+            pi = r["per_iter"]
+            if pi and pi[min(k, len(pi) - 1)]:
+                hits += 1
+        pass_rate_by_iteration.append(round(hits / n, 4) if n else 0.0)
+
+    iters_dist: dict[str, int] = {}
+    for r in gradable:
+        key = str(len(r["per_iter"]))
+        iters_dist[key] = iters_dist.get(key, 0) + 1
+
+    return {
+        "n_questions": len(results),
+        "n_gradable": n,
+        "n_gold_errors": len(results) - n,
+        "n_agent_errors": sum(1 for r in gradable if not r["agent_ok"]),
+        "overall_pass_rate": round(overall, 4),
+        "pass_rate_by_iteration": pass_rate_by_iteration,  # index 0 = after first generate
+        "iterations_distribution": iters_dist,
+    }
 
 
 # ---------- Main (provided) --------------------------------------------

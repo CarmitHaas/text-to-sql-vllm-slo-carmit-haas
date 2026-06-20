@@ -55,9 +55,11 @@ def health() -> dict[str, str]:
 @app.post("/answer", response_model=AnswerResponse)
 def answer(req: AnswerRequest) -> AnswerResponse:
     state = AgentState(question=req.question, db_id=req.db)
+    # Expose the request tags both as Langfuse tag chips (langfuse_tags) and as
+    # queryable metadata, so the Phase 4 trace list shows them as filterable tags.
     config: dict[str, Any] = {
         "callbacks": [_lf_handler] if _lf_handler is not None else [],
-        "metadata": req.tags,
+        "metadata": {"langfuse_tags": [f"{k}={v}" for k, v in req.tags.items()], **req.tags},
     }
     try:
         final = graph.invoke(state, config=config)

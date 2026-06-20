@@ -1,0 +1,457 @@
+{
+  "summary": {
+    "n_questions": 30,
+    "n_gradable": 30,
+    "n_gold_errors": 0,
+    "n_agent_errors": 1,
+    "overall_pass_rate": 0.3667,
+    "pass_rate_by_iteration": [
+      0.3333,
+      0.3667,
+      0.3667
+    ],
+    "iterations_distribution": {
+      "1": 21,
+      "3": 6,
+      "2": 3
+    }
+  },
+  "wall_clock_seconds": 185.5823347280002,
+  "results": [
+    {
+      "db_id": "formula_1",
+      "question": "What is the coordinates location of the circuits for Australian grand prix?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 2.4959900599997127
+    },
+    {
+      "db_id": "superhero",
+      "question": "List down Ajax's superpowers.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        true
+      ],
+      "final_correct": true,
+      "latency_seconds": 2.797060042999874
+    },
+    {
+      "db_id": "california_schools",
+      "question": "List the top five schools, by descending order, from the highest to the lowest, the most number of Enrollment (Ages 5-17). Please give their NCES school identification number.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 3.376316427000347
+    },
+    {
+      "db_id": "financial",
+      "question": "What is the average number of crimes committed in 1995 in regions where the number exceeds 4000 and the region has accounts that are opened starting from the year 1997?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 3,
+      "per_iter": [
+        false,
+        false,
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 14.376165593000223
+    },
+    {
+      "db_id": "financial",
+      "question": "How many male clients in 'Hl.m. Praha' district?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        true
+      ],
+      "final_correct": true,
+      "latency_seconds": 2.7982904330001475
+    },
+    {
+      "db_id": "formula_1",
+      "question": "What is the average fastest lap time in seconds for Lewis Hamilton in all the Formula_1 races?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 3,
+      "per_iter": [
+        false,
+        false,
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 21.49049367600037
+    },
+    {
+      "db_id": "formula_1",
+      "question": "From race no. 50 to 100, how many finishers have been disqualified?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 2.9785559820002163
+    },
+    {
+      "db_id": "student_club",
+      "question": "Calculate the difference of the total amount spent in all events by the Student_Club in year 2019 and 2020.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        true
+      ],
+      "final_correct": true,
+      "latency_seconds": 4.4593426209994504
+    },
+    {
+      "db_id": "california_schools",
+      "question": "What is the complete address of the school with the lowest excellence rate? Indicate the Street, City, Zip and State.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 3.749609013999361
+    },
+    {
+      "db_id": "toxicology",
+      "question": "Calculate the percentage of carcinogenic molecules which contain the Chlorine element.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 3,
+      "per_iter": [
+        false,
+        false,
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 17.206237038000836
+    },
+    {
+      "db_id": "codebase_community",
+      "question": "How many users received commentator badges in 2014?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        true
+      ],
+      "final_correct": true,
+      "latency_seconds": 2.532917995000389
+    },
+    {
+      "db_id": "thrombosis_prediction",
+      "question": "Among the patients with a normal Ig G level, how many of them have symptoms?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 3.704620643000453
+    },
+    {
+      "db_id": "superhero",
+      "question": "How many superheroes have the super power of \"Super Strength\"?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        true
+      ],
+      "final_correct": true,
+      "latency_seconds": 2.7635234899998977
+    },
+    {
+      "db_id": "card_games",
+      "question": "Please list the name of the cards in the set Coldsnap with the highest converted mana cost.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        true
+      ],
+      "final_correct": true,
+      "latency_seconds": 2.797740418000103
+    },
+    {
+      "db_id": "thrombosis_prediction",
+      "question": "For all patients with normal uric acid (UA), what is the average UA index based on their latest laboratory examination result?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 4.841358429999673
+    },
+    {
+      "db_id": "codebase_community",
+      "question": "User No.23853 gave a comment to a post at 9:08:18 on 2013/7/12, was that post well-finished?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 2,
+      "per_iter": [
+        false,
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 8.808461643000555
+    },
+    {
+      "db_id": "student_club",
+      "question": "How many members of Business have the Medium size of tee shirt?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        true
+      ],
+      "final_correct": true,
+      "latency_seconds": 2.6993474920000153
+    },
+    {
+      "db_id": "card_games",
+      "question": "What is the type of the card \"Ancestor's Chosen\" as originally printed?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 2,
+      "per_iter": [
+        false,
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 4.077030730000843
+    },
+    {
+      "db_id": "california_schools",
+      "question": "Which active district has the highest average score in Reading?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        true
+      ],
+      "final_correct": true,
+      "latency_seconds": 2.9914599759995326
+    },
+    {
+      "db_id": "financial",
+      "question": "Please provide the IDs of the 3 female clients with the largest loans.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        true
+      ],
+      "final_correct": true,
+      "latency_seconds": 3.8149380509994444
+    },
+    {
+      "db_id": "formula_1",
+      "question": "Among all the lap records set on various circuits, what is the time for the fastest one?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 1.5404016319998846
+    },
+    {
+      "db_id": "superhero",
+      "question": "In superheroes with missing weight data, calculate the difference between the number of superheroes with blue eyes and no eye color.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 4.587061410999922
+    },
+    {
+      "db_id": "student_club",
+      "question": "In the College of Agriculture and Applied Sciences, how many majors are under the department of School of Applied Sciences, Technology and Education?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        true
+      ],
+      "final_correct": true,
+      "latency_seconds": 2.399333421999472
+    },
+    {
+      "db_id": "codebase_community",
+      "question": "Mention the display name and location of the user who owned the excerpt post with hypothesis-testing tag.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 3.046591643999818
+    },
+    {
+      "db_id": "thrombosis_prediction",
+      "question": "List all patients who were followed up at the outpatient clinic who underwent a laboratory test in October 1991 and had a total blood bilirubin level within the normal range.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 3,
+      "per_iter": [
+        false,
+        false,
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 19.759043785000358
+    },
+    {
+      "db_id": "toxicology",
+      "question": "Among the molecules with element Calcium, are they mostly carcinogenic or non carcinogenic?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 5.735989709000023
+    },
+    {
+      "db_id": "student_club",
+      "question": "Please list the full names of the students in the Student_Club that come from the Art and Design Department.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 3,
+      "per_iter": [
+        false,
+        false,
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 10.948920165000345
+    },
+    {
+      "db_id": "card_games",
+      "question": "List all the mythic rarity print cards banned in gladiator format.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": false,
+      "agent_error": "OperationalError: no such column: c.isFoil",
+      "n_iterations": 3,
+      "per_iter": [
+        false,
+        false,
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 11.436236609999469
+    },
+    {
+      "db_id": "codebase_community",
+      "question": "Among posts by Harvey Motulsky and Noah Snyder, which one has higher popularity?",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 1,
+      "per_iter": [
+        false
+      ],
+      "final_correct": false,
+      "latency_seconds": 3.6635683619997508
+    },
+    {
+      "db_id": "codebase_community",
+      "question": "Mention the reputation of users who had obtained the badge on 7/19/2010 7:39:08 PM.",
+      "gold_ok": true,
+      "gold_error": null,
+      "agent_ok": true,
+      "agent_error": null,
+      "n_iterations": 2,
+      "per_iter": [
+        false,
+        true
+      ],
+      "final_correct": true,
+      "latency_seconds": 6.7413122199996
+    }
+  ]
+}

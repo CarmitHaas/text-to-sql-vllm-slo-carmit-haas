@@ -1,0 +1,211 @@
+<mxfile host="app.diagrams.net" agent="claude-code" version="29.4.0">
+  <diagram id="t2sql-arch" name="Architecture">
+    <mxGraphModel dx="1700" dy="1040" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1040" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" parent="1" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fillColor=none;strokeColor=none;" value="Text-to-SQL Agent with vLLM Serving and Full-Stack Observability">
+          <mxGeometry height="36" width="1000" x="350" y="24" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" parent="1" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontStyle=2;fontColor=#666666;fillColor=none;strokeColor=none;" value="LangGraph verify to revise loop · Qwen3-30B-A3B FP8 on one H100 · Prometheus and Grafana · Langfuse traces · SLO load test">
+          <mxGeometry height="22" width="1400" x="150" y="70" as="geometry" />
+        </mxCell>
+
+        <!-- ZONES (behind everything) -->
+        <mxCell id="hostzone" parent="1" vertex="1" style="rounded=0;dashed=1;dashPattern=8 8;fillColor=none;strokeColor=#666666;strokeWidth=2;align=right;verticalAlign=top;spacingRight=14;spacingTop=8;fontColor=#666666;fontStyle=2;fontSize=12;" value="host processes · SSH port-forwarded">
+          <mxGeometry height="400" width="1020" x="290" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="dockerzone" parent="1" vertex="1" style="rounded=0;dashed=1;dashPattern=8 8;fillColor=none;strokeColor=#2496ED;strokeWidth=2;align=right;verticalAlign=top;spacingRight=14;spacingTop=8;fontColor=#2496ED;fontStyle=2;fontSize=12;" value="docker compose · self-hosted observability">
+          <mxGeometry height="640" width="300" x="1360" y="170" as="geometry" />
+        </mxCell>
+
+        <!-- LEFT: clients -->
+        <mxCell id="analyst" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef2f7;strokeColor=#3b5b78;strokeWidth=2;fontSize=12;verticalAlign=middle;align=center;spacingLeft=40;" value="Analyst&#10;(English question)">
+          <mxGeometry height="90" width="170" x="70" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="analyst_ic" parent="1" vertex="1" style="shape=image;html=1;imageAspect=0;image=https://api.iconify.design/mdi/account-tie-outline.svg?color=%233b5b78;" value="">
+          <mxGeometry height="34" width="34" x="80" y="258" as="geometry" />
+        </mxCell>
+
+        <mxCell id="run_eval" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#bdbdbd;strokeWidth=1.5;fontSize=12;align=center;spacingLeft=34;" value="Eval harness&#10;run_eval.py">
+          <mxGeometry height="70" width="170" x="70" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="eval_ic" parent="1" vertex="1" style="shape=image;html=1;imageAspect=0;image=https://cdn.simpleicons.org/python/3776AB;" value="">
+          <mxGeometry height="28" width="28" x="80" y="501" as="geometry" />
+        </mxCell>
+        <mxCell id="load_driver" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#bdbdbd;strokeWidth=1.5;fontSize=12;align=center;spacingLeft=34;" value="Load test&#10;load_test/driver.py">
+          <mxGeometry height="70" width="170" x="70" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="load_ic" parent="1" vertex="1" style="shape=image;html=1;imageAspect=0;image=https://cdn.simpleicons.org/python/3776AB;" value="">
+          <mxGeometry height="28" width="28" x="80" y="611" as="geometry" />
+        </mxCell>
+
+        <!-- AGENT box + nodes -->
+        <mxCell id="agentbox" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1565c0;strokeWidth=3;verticalAlign=top;align=left;fontSize=13;fontStyle=1;spacingLeft=44;spacingTop=10;" value="Agent server · FastAPI :8001 · LangGraph">
+          <mxGeometry height="210" width="580" x="310" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="agent_ic1" parent="1" vertex="1" style="shape=image;html=1;imageAspect=0;image=https://cdn.simpleicons.org/fastapi/009688;" value="">
+          <mxGeometry height="26" width="26" x="322" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="gen" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff4e5;strokeColor=#e67e22;strokeWidth=2;fontSize=11;align=center;" value="generate_sql&#10;LLM call 1">
+          <mxGeometry height="50" width="120" x="330" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="execute" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;strokeWidth=2;fontSize=11;align=center;" value="execute&#10;run SQL (local)">
+          <mxGeometry height="50" width="110" x="470" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="verify" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff4e5;strokeColor=#e67e22;strokeWidth=2;fontSize=11;align=center;" value="verify&#10;LLM call 2">
+          <mxGeometry height="50" width="110" x="600" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="revise" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff4e5;strokeColor=#e67e22;strokeWidth=2;fontSize=11;align=center;" value="revise&#10;LLM call 3">
+          <mxGeometry height="50" width="120" x="730" y="370" as="geometry" />
+        </mxCell>
+
+        <!-- BIRD sqlite -->
+        <mxCell id="sqlite" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#003B57;strokeWidth=2;fontSize=12;align=center;spacingLeft=34;" value="BIRD sqlite DBs&#10;data/bird/">
+          <mxGeometry height="70" width="180" x="445" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="sqlite_ic" parent="1" vertex="1" style="shape=image;html=1;imageAspect=0;image=https://cdn.simpleicons.org/sqlite/003B57;" value="">
+          <mxGeometry height="28" width="28" x="455" y="581" as="geometry" />
+        </mxCell>
+
+        <!-- vLLM -->
+        <mxCell id="vllm" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f8e9;strokeColor=#76B900;strokeWidth=2.5;fontSize=13;fontStyle=1;verticalAlign=top;align=center;spacingTop=10;" value="vLLM · :8000&#10;&#10;Qwen3-30B-A3B (FP8)&#10;1x H100 80GB">
+          <mxGeometry height="160" width="320" x="970" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="vllm_ic" parent="1" vertex="1" style="shape=image;html=1;imageAspect=0;image=https://cdn.simpleicons.org/nvidia/76B900;" value="">
+          <mxGeometry height="34" width="34" x="1113" y="430" as="geometry" />
+        </mxCell>
+
+        <!-- Nebius dev backend (external) -->
+        <mxCell id="nebius" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=6 6;fillColor=#f7f7ff;strokeColor=#5e35b1;strokeWidth=2;fontSize=12;align=center;spacingLeft=34;" value="Nebius Token Factory&#10;dev backend · hosted same model">
+          <mxGeometry height="80" width="320" x="970" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="nebius_ic" parent="1" vertex="1" style="shape=image;html=1;imageAspect=0;image=https://api.iconify.design/mdi/cloud-outline.svg?color=%235e35b1;" value="">
+          <mxGeometry height="30" width="30" x="980" y="745" as="geometry" />
+        </mxCell>
+
+        <!-- Observability stack -->
+        <mxCell id="prometheus" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff5f0;strokeColor=#E6522C;strokeWidth=2;fontSize=12;align=center;spacingLeft=34;" value="Prometheus · :9090&#10;scrapes /metrics">
+          <mxGeometry height="80" width="210" x="1395" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="prom_ic" parent="1" vertex="1" style="shape=image;html=1;imageAspect=0;image=https://cdn.simpleicons.org/prometheus/E6522C;" value="">
+          <mxGeometry height="30" width="30" x="1405" y="255" as="geometry" />
+        </mxCell>
+        <mxCell id="grafana" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7ef;strokeColor=#F46800;strokeWidth=2;fontSize=12;align=center;spacingLeft=34;" value="Grafana · :3000&#10;latency · throughput · KV">
+          <mxGeometry height="80" width="210" x="1395" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="graf_ic" parent="1" vertex="1" style="shape=image;html=1;imageAspect=0;image=https://cdn.simpleicons.org/grafana/F46800;" value="">
+          <mxGeometry height="30" width="30" x="1405" y="375" as="geometry" />
+        </mxCell>
+        <mxCell id="langfuse" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3f0ff;strokeColor=#5e35b1;strokeWidth=2;fontSize=12;align=center;spacingLeft=34;" value="Langfuse · :3001&#10;agent traces · spans">
+          <mxGeometry height="80" width="210" x="1395" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="lf_ic" parent="1" vertex="1" style="shape=image;html=1;imageAspect=0;image=https://api.iconify.design/mdi/binoculars.svg?color=%235e35b1;" value="">
+          <mxGeometry height="28" width="28" x="1405" y="516" as="geometry" />
+        </mxCell>
+        <mxCell id="backends" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#bdbdbd;strokeWidth=1.5;fontSize=11;align=center;spacingLeft=30;" value="Postgres · ClickHouse&#10;Redis · MinIO">
+          <mxGeometry height="90" width="210" x="1395" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="be_ic" parent="1" vertex="1" style="shape=image;html=1;imageAspect=0;image=https://cdn.simpleicons.org/postgresql/4169E1;" value="">
+          <mxGeometry height="26" width="26" x="1405" y="642" as="geometry" />
+        </mxCell>
+
+        <!-- ===== EDGES (last) ===== -->
+        <!-- request / answer (green) -->
+        <mxCell id="e_an_ag" parent="1" edge="1" source="analyst" target="agentbox" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=classic;endArrow=classic;strokeColor=#2e7d32;strokeWidth=2.5;fontSize=11;fontColor=#2e7d32;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" value="question / rows">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_gen_ex" parent="1" edge="1" source="gen" target="execute" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#2e7d32;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_ex_vf" parent="1" edge="1" source="execute" target="verify" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#2e7d32;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_vf_rv" parent="1" edge="1" source="verify" target="revise" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#2e7d32;strokeWidth=2;fontSize=10;fontColor=#2e7d32;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="not ok">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rv_ex" parent="1" edge="1" source="revise" target="execute" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#2e7d32;strokeWidth=2;fontSize=10;fontColor=#2e7d32;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;" value="retry (max 3)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="790" y="470" />
+              <mxPoint x="547" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_ex_db" parent="1" edge="1" source="execute" target="sqlite" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=classic;endArrow=classic;strokeColor=#2e7d32;strokeWidth=2;fontSize=10;fontColor=#2e7d32;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.35;entryY=0;entryDx=0;entryDy=0;" value="SQL / rows">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_ag_vllm" parent="1" edge="1" source="agentbox" target="vllm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=classic;endArrow=classic;strokeColor=#2e7d32;strokeWidth=2.5;fontSize=11;fontColor=#2e7d32;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="LLM calls (chat/completions)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- telemetry (blue) -->
+        <mxCell id="e_vllm_prom" parent="1" edge="1" source="vllm" target="prometheus" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#1565c0;strokeWidth=2;fontSize=10;fontColor=#1565c0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="/metrics scrape">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1130" y="270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_prom_graf" parent="1" edge="1" source="prometheus" target="grafana" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#1565c0;strokeWidth=2;fontSize=10;fontColor=#1565c0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="datasource">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_ag_lf" parent="1" edge="1" source="agentbox" target="langfuse" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;strokeColor=#1565c0;strokeWidth=2;fontSize=10;fontColor=#1565c0;exitX=0.97;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="traces · spans">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="872" y="650" />
+              <mxPoint x="1340" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_lf_be" parent="1" edge="1" source="langfuse" target="backends" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#666666;strokeWidth=1.5;fontSize=10;fontColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="state">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- eval / load (orange dashed) -->
+        <mxCell id="e_eval_ag" parent="1" edge="1" source="run_eval" target="agentbox" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#ea580c;strokeWidth=2;fontSize=10;fontColor=#ea580c;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.72;entryDx=0;entryDy=0;" value="30 questions">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_load_ag" parent="1" edge="1" source="load_driver" target="agentbox" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#ea580c;strokeWidth=2;fontSize=10;fontColor=#ea580c;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.9;entryDx=0;entryDy=0;" value="10 rps x 300s">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- dev backend (grey dashed) -->
+        <mxCell id="e_ag_neb" parent="1" edge="1" source="agentbox" target="nebius" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;dashed=1;strokeColor=#666666;strokeWidth=2;fontSize=10;fontColor=#666666;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="dev only (build/debug, same model)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="600" y="760" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- LEGEND -->
+        <mxCell id="legend" parent="1" vertex="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#bdbdbd;strokeWidth=1.5;verticalAlign=top;align=left;fontSize=12;fontStyle=1;spacingLeft=10;spacingTop=8;" value="Legend">
+          <mxGeometry height="170" width="360" x="70" y="740" as="geometry" />
+        </mxCell>
+        <mxCell id="lg1" parent="1" edge="1" style="endArrow=classic;html=1;strokeColor=#2e7d32;strokeWidth=2.5;" >
+          <mxGeometry relative="1" as="geometry"><mxPoint x="90" y="785" as="sourcePoint" /><mxPoint x="150" y="785" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="lg1t" parent="1" vertex="1" style="text;html=1;align=left;fontSize=12;fillColor=none;strokeColor=none;" value="request / answer path">
+          <mxGeometry height="20" width="240" x="160" y="775" as="geometry" /></mxCell>
+        <mxCell id="lg2" parent="1" edge="1" style="endArrow=classic;html=1;strokeColor=#1565c0;strokeWidth=2;" >
+          <mxGeometry relative="1" as="geometry"><mxPoint x="90" y="815" as="sourcePoint" /><mxPoint x="150" y="815" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="lg2t" parent="1" vertex="1" style="text;html=1;align=left;fontSize=12;fillColor=none;strokeColor=none;" value="telemetry — metrics + traces">
+          <mxGeometry height="20" width="240" x="160" y="805" as="geometry" /></mxCell>
+        <mxCell id="lg3" parent="1" edge="1" style="endArrow=classic;html=1;dashed=1;strokeColor=#ea580c;strokeWidth=2;" >
+          <mxGeometry relative="1" as="geometry"><mxPoint x="90" y="845" as="sourcePoint" /><mxPoint x="150" y="845" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="lg3t" parent="1" vertex="1" style="text;html=1;align=left;fontSize=12;fillColor=none;strokeColor=none;" value="eval + load-test traffic">
+          <mxGeometry height="20" width="240" x="160" y="835" as="geometry" /></mxCell>
+        <mxCell id="lg4" parent="1" edge="1" style="endArrow=classic;html=1;dashed=1;strokeColor=#666666;strokeWidth=2;" >
+          <mxGeometry relative="1" as="geometry"><mxPoint x="90" y="875" as="sourcePoint" /><mxPoint x="150" y="875" as="targetPoint" /></mxGeometry>
+        </mxCell>
+        <mxCell id="lg4t" parent="1" vertex="1" style="text;html=1;align=left;fontSize=12;fillColor=none;strokeColor=none;" value="dev-only hosted backend (Nebius)">
+          <mxGeometry height="20" width="260" x="160" y="865" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

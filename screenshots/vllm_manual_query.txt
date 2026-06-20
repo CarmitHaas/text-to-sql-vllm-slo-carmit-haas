@@ -1,0 +1,25 @@
+================ vLLM serving Qwen3-30B-A3B (FP8) on 1x H100 80GB ================
+$ nvidia-smi --query-gpu=name,memory.used,memory.total,utilization.gpu --format=csv,noheader
+NVIDIA H100 80GB HBM3, 75241 MiB, 81559 MiB, 0 %
+
+$ curl -s http://localhost:8000/v1/models   # served model id
+Qwen/Qwen3-30B-A3B-Instruct-2507
+
+vLLM startup log:
+  Model loading took 29.10 GiB and 8.88 s
+  Maximum concurrency for 8,192 tokens per request: 57.53x
+  init engine (profile, create kv cache, warmup model) took 3.45 s
+  Application startup complete.
+
+================ Manual text-to-SQL query (H100 vLLM, /v1/chat/completions) ================
+PROMPT (question): What are the latitude and longitude of the circuit used for the Australian Grand Prix?
+
+vLLM RESPONSE:
+```sql
+SELECT c.lat, c.lng
+FROM circuits c
+JOIN races r ON c.circuitId = r.circuitId
+WHERE r.name = 'Australian Grand Prix';
+```
+
+tokens: {'prompt_tokens': 114, 'total_tokens': 153, 'completion_tokens': 39} | model: Qwen/Qwen3-30B-A3B-Instruct-2507

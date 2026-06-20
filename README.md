@@ -1,6 +1,79 @@
-# Home assignment: LLM inference + o11y
+# Text-to-SQL agent on Qwen3-30B-A3B: vLLM serving + full-stack observability
 
-  
+Serve a 30B Mixture-of-Experts model on a single H100, put a self-correcting LangGraph agent on top,
+and instrument both layers well enough to find and explain a real performance wall. This repo is my
+build, run end to end on a self-provisioned H100 80GB.
+
+**Full writeup with every number: [REPORT.md](REPORT.md).**
+
+![Text-to-SQL agent with vLLM serving and full-stack observability](docs/architecture.png)
+
+## What I built
+
+- **Serving (Phase 1):** Qwen3-30B-A3B-Instruct-2507 in FP8 on one H100 80GB via vLLM. The MoE split
+  (30.5B total params, 3.3B active per token) is what lets a 30B model fit and stay fast on one card:
+  FP8 weights load in 29.1 GiB and leave room for a KV pool vLLM rates at 57x concurrency.
+- **Agent (Phase 3):** a LangGraph text-to-SQL agent. It writes SQL, runs it against a BIRD sqlite
+  database, verifies the rows look plausible, and revises up to 3 times when they do not.
+- **Observability (Phases 2, 4):** Prometheus and Grafana on the serving layer (latency percentiles,
+  throughput, KV cache), Langfuse on the agent (per-request trace waterfalls with tags).
+- **Eval and load test (Phases 5, 6):** an execution-accuracy eval over 30 BIRD questions, and a load
+  test that drives the SLO diagnosis.
+
+## Key results and insights
+
+**Serving holds up.** FP8 30B on one H100, 29.1 GiB resident, healthy under load: TTFT around 200 ms,
+TPOT P50 around 60 ms, KV cache near 5% with plenty of headroom.
+
+![Grafana serving dashboard reacting to load](screenshots/grafana_serving.png)
+
+**The agent loop earns its keep, modestly.** 33.3% execution accuracy on BIRD (a hard benchmark) with a
+generic prompt. The verify/revise loop lifts the pass rate from 30.0% at the first attempt to 33.3%,
+one question recovered. The genuinely hard questions (percentages, datetime matching, multi-join
+filters) stay wrong, so the next accuracy lever is the prompt, not more loop iterations.
+
+![Langfuse trace: the generate, verify, revise waterfall](screenshots/langfuse_trace.png)
+
+**The interesting part: the SLO, and reading the dashboard right.** The platform SLO was P95 end-to-end
+under 5 s at 10+ rps. I missed it, and the diagnosis is the real value.
+
+My first read of the board was wrong, twice. I thought the KV cache was pinned at 100%, but those were
+the panel's threshold lines; actual usage stayed near 5%. And the 8-minute latency spikes were
+`histogram_quantile` artifacts at the sparse tail, not real latency. KV was never the bottleneck and
+the GPU was never the bottleneck.
+
+The real wall is the agent shape. Each answer is 2 to 3 sequential LLM calls, so the latency floor is a
+whole answer, not one call. I proved it by lowering the load instead of raising it:
+
+| Offered load | P50 | P95 | What happened |
+|---|---|---|---|
+| 10 rps | 41 s | 108 s | collapse, mass timeouts |
+| 5 rps | 69 s | 104 s | still collapsing, only 3.75 rps achieved |
+| 2 rps | **5.65 s** | 21.7 s | stable (1 timeout in 360), but the median answer still misses 5 s |
+
+At 2 rps the GPU is idle enough to drop timeouts to 1 in 360, and the median single answer is still
+5.65 s. Lowering the rate cannot fix that, because the floor is the agent's sequential calls. My one
+tuning change (CUDA graphs on) moved decode speed but not P95, which is its own lesson: the metric I
+targeted moved, the SLO did not. The before and after dashboards look nearly identical for exactly that
+reason.
+
+![Before the tuning change (enforce-eager) at 10 rps](screenshots/grafana_before.png)
+![After the tuning change (CUDA graphs) at 10 rps](screenshots/grafana_after.png)
+
+Honest verdict: the SLO is structurally out of reach for this agent shape on this hardware. The fix is
+agent-side (fewer calls per answer, or an async handler so calls overlap) or a faster model, not a
+serving flag. Quality survived the tuning (36.7% post-tuning vs 33.3% baseline, within run noise).
+
+The full diagnosis, the serving-config rationale, and the iteration log are in [REPORT.md](REPORT.md).
+
+During development the agent points at the same model hosted on Nebius Token Factory; every reported
+number comes from the H100 run.
+
+---
+
+> The original assignment brief follows, kept for context.
+
+---
 
 ## Legend
 
